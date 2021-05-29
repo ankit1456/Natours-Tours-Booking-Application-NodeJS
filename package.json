@@ -4,8 +4,8 @@
   "description": "Production Ready Tours Booking Application using Node JS ,Express and Mongo",
   "main": "app.js",
   "scripts": {
-    "start:dev": "nodemon server.js",
-    "start:prod": "NODE_ENV=production nodemon server.js"
+    "start:dev": "nodemon app.js",
+    "start:prod": "NODE_ENV=production nodemon app.js"
   },
   "author": "ankit tripathi",
   "license": "ISC",
@@ -16,5 +16,16 @@
     "morgan": "^1.10.0",
     "slugify": "^1.5.3",
     "validator": "^13.6.0"
+  },
+  "devDependencies": {
+    "eslint": "^5.16.0",
+    "eslint-config-airbnb": "^17.1.0",
+    "eslint-config-prettier": "^4.1.0",
+    "eslint-plugin-import": "^2.17.2",
+    "eslint-plugin-jsx-a11y": "^6.2.1",
+    "eslint-plugin-node": "^8.0.1",
+    "eslint-plugin-prettier": "^3.0.1",
+    "eslint-plugin-react": "^7.12.4",
+    "prettier": "^1.17.0"
   }
 }
