@@ -13,7 +13,7 @@ mongoose
     useCreateIndex: true,
     useFindAndModify: false
   })
-  .then(() => console.log('DB connection successful!'));
+  .then(() => console.log('DB connected successfully!'));
 
 // READ JSON FILE
 const tours = JSON.parse(fs.readFileSync(`${__dirname}/tours-simple.json`, 'utf-8'));
