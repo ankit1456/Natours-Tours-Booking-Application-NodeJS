@@ -4,7 +4,6 @@ const {
   signin,
   forgotPassword,
   resetPassword,
-  protect,
   updatePassword
 } = require('./../controllers/authController');
 const userController = require('../controllers/userController');
@@ -17,18 +16,21 @@ router.post('/signin', signin);
 
 router.post('/forgotPassword', forgotPassword);
 router.patch('/resetPassword/:token', resetPassword);
-router.patch('/updateMyPassword', protect, updatePassword);
-router.patch('/updateMe', protect, userController.updateMe);
-router.delete('/deleteMe', protect, userController.deleteMe);
+
+router.use(authController.protect);
+router.patch('/updateMyPassword', updatePassword);
+
+router.get('/me', userController.getMe, userController.getUser);
+router.patch('/updateMe', userController.updateMe);
+router.delete('/deleteMe', userController.deleteMe);
+
+router.use(authController.restrictTo('admin'));
 
 router
   .route('/')
-  .get(
-    authController.protect,
-    authController.restrictTo('admin'),
-    userController.getAllUsers
-  )
+  .get(userController.getAllUsers)
   .post(userController.createUser);
+
 router
   .route('/:id')
   .get(userController.getUser)
