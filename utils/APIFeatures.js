@@ -1,7 +1,7 @@
 class APIFeatures {
   constructor(query, queryString) {
-    this.query = query;
-    this.queryString = queryString;
+    this.query = query; //mongoose query
+    this.queryString = queryString; // req.query
   }
 
   filter() {

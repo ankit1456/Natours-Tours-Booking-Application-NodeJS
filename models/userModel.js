@@ -47,7 +47,7 @@ const userSchema = new mongoose.Schema({
   }
 });
 
-//! pre document middleware which saves hashed password
+// //! pre document middleware which saves hashed password
 userSchema.pre('save', async function(next) {
   if (!this.isModified('password')) return next();
 

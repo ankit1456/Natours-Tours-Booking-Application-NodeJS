@@ -64,7 +64,6 @@ exports.signin = catchAsync(async (req, res, next) => {
   }
 
   // 3) If everything ok, send token to client
-
   createSendToken(user, 200, res);
 });
 //! PROTECTED ROUTES
@@ -73,13 +72,14 @@ exports.protect = catchAsync(async (req, res, next) => {
   let token;
   if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
     token = req.headers.authorization.split(' ')[1];
+  } else if (req.cookies.jwt) {
+    token = req.cookies.jwt;
   }
-
   if (!token) {
     return next(new AppError('You are not logged in. Please log in to get access.', 401));
   }
 
-  // 2) Verification token
+  // 2) Verify token
   const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
 
   // 3) Check if user still exists
@@ -93,7 +93,7 @@ exports.protect = catchAsync(async (req, res, next) => {
   // 4) Check if user changed password after the token was issued
   if (currentUser.changedPasswordAfter(decoded.iat)) {
     return next(
-      new AppError('User recently changed password. Please log in again.', 401)
+      new AppError('User recently changed the password. Please log in again.', 401)
     );
   }
   // GRANT ACCESS TO PROTECTED ROUTE
@@ -176,15 +176,14 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
   // 3) Update changed password at property for the current user
 
   // 4) Log the user in, send JWT
-
   createSendToken(user, 200, res);
 });
 
 //! UPDATE PASSWORD FOR LOGGED IN USERS
 exports.updatePassword = catchAsync(async (req, res, next) => {
   // 1) Get user from collection
-
   const user = await User.findById(req.user.id).select('+password');
+
   // 2) If posted password is correct
   if (!(await user.correctPassword(req.body.passwordCurrent, user.password))) {
     return next(new AppError('Your current password is wrong', 401));
@@ -198,4 +197,30 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
   // 4) Log user in ,send JWT
 
   createSendToken(user, 200, res);
+});
+
+//! CHECK WHEATHER USER IS LOGGED IN OR NOT
+//only for rendered pages no errors
+exports.isLoggedIn = catchAsync(async (req, res, next) => {
+  // 1) Getting token and check of it's there
+
+  if (req.cookies.jwt) {
+    // 2) Verify token
+    const decoded = await promisify(jwt.verify)(req.cookies.jwt, process.env.JWT_SECRET);
+
+    // 3) Check if user still exists
+    const currentUser = await User.findById(decoded.id);
+    if (!currentUser) {
+      return next();
+    }
+
+    // 4) Check if user changed password after the token was issued
+    if (currentUser.changedPasswordAfter(decoded.iat)) {
+      return next();
+    }
+    // THERE IS A LOGGED IN USER
+    res.locals.user = currentUser;
+    return next();
+  }
+  next();
 });

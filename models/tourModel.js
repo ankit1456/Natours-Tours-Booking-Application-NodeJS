@@ -113,8 +113,10 @@ const tourSchema = mongoose.Schema(
     toObject: { virtuals: true }
   }
 );
+
 tourSchema.index({ price: 1, ratingsAverage: -1 });
 tourSchema.index({ slug: 1 });
+
 tourSchema.virtual('durationWeeks').get(function() {
   return this.duration / 7;
 });
@@ -141,7 +143,7 @@ tourSchema.pre('save', function(next) {
 //! Query MIDDLEWARE
 tourSchema.pre(/^find/, function(next) {
   this.find({ secretTour: { $ne: true } });
-  this.start = Date.now();
+  this.startTime = Date.now();
   next();
 });
 
@@ -154,7 +156,7 @@ tourSchema.pre(/^find/, function(next) {
 });
 
 tourSchema.post(/^find/, function(docs, next) {
-  console.log(`Query took ${Date.now() - this.start} ms`);
+  console.log(`Query took ${Date.now() - this.startTime} ms`);
   next();
 });
 //!Aggregation MIDDLEWARE

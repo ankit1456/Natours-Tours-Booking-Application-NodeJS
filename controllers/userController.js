@@ -3,11 +3,11 @@ const User = require('../models/userModel');
 const AppError = require('../utils/appError');
 const factory = require('../controllers/handleFactory');
 
-const filterObj = (obj, ...allowedFields) => {
+const filterObj = (reqBody, ...allowedFields) => {
   const newObj = {};
-  Object.keys(obj).forEach(el => {
+  Object.keys(reqBody).forEach(el => {
     if (allowedFields.includes(el)) {
-      newObj[el] = obj[el];
+      newObj[el] = reqBody[el];
     }
   });
   return newObj;
@@ -25,7 +25,7 @@ exports.getUser = factory.getOne(User);
 exports.updateUser = factory.updateOne(User);
 exports.deleteUser = factory.deleteOne(User);
 
-//! Updates logged in users
+//! Update logged in users
 exports.updateMe = catchAsync(async (req, res, next) => {
   // 1) Create error if user posts password data
   if (req.body.password || req.body.passwordConfrm) {
