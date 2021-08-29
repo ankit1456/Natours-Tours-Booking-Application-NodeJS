@@ -39,16 +39,13 @@ block content
               input#email.form__input(type='email', value=`${user.email}`, required, name='email')
             .form__group.form__photo-upload
               img.form__user-photo(src=`/img/users/${user.photo}`, alt='User photo')
-              a.btn-text(href='') Choose new photo
+              input.form__upload(type='file', accept='image/*', id='photo', name='photo')
+              label(for='photo') Choose new photo
             .form__group.right
               button.btn.btn--small.btn--green Save settings
-          
-          
-          
-          
+              
               
         .line &nbsp;
-        
         .user-view__form-container
           h2.heading-secondary.ma-bt-md Password change
           form.form.form-user-password
@@ -63,3 +60,10 @@ block content
               input#password-confirm.form__input(type='password', placeholder='••••••••', required, minlength='8')
             .form__group.right
               button.btn.btn--small.btn--green.btn--save-password Save password
+              
+          
+        
+          
+          
+          
+              

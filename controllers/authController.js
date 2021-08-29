@@ -76,7 +76,9 @@ exports.protect = catchAsync(async (req, res, next) => {
     token = req.cookies.jwt;
   }
   if (!token) {
-    return next(new AppError('You are not logged in. Please log in to get access.', 401));
+    return next(
+      new AppError('You are not logged in . Please log in to get access 🙂', 401)
+    );
   }
 
   // 2) Verify token
@@ -204,7 +206,7 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
 //only for rendered pages no errors
 exports.isLoggedIn = async (req, res, next) => {
   // 1) Getting token and check of it's there
-
+  // console.log('req.cookies:', req.cookies);
   if (req.cookies.jwt) {
     // 2) Verify token
     try {

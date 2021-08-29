@@ -67,7 +67,8 @@ app.use(
 
 app.use((req, res, next) => {
   req.requestTime = new Date().toLocaleString();
-  console.log(req.cookies);
+  console.log(req.requestTime);
+  // console.log('cookies:', req.cookies);
 
   next();
 });

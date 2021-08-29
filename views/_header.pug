@@ -1,4 +1,5 @@
 // HEADER
+
 header.header
   nav.nav.nav--tours
     a.nav__el(href='/') All tours
@@ -15,6 +16,7 @@ header.header
       a.nav__el(href='/me')
         img.nav__user-img(src=`/img/users/${user.photo}` alt='AVATAR')
         span=user.name.split(' ')[0]
+      
     else
       a.nav__el(href='/signin') Log in
       a.nav__el.nav__el--cta(href="/signup") Sign up

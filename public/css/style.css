@@ -368,10 +368,14 @@ body {
     linear,
     left top,
     right bottom,
-    from(#7dd56f),
-    to(#28b487)
+    from(rgba(125, 213, 111, 0.9)),
+    to(rgba(40, 180, 135, 0.9))
   );
-  background-image: linear-gradient(to right bottom, #7dd56f, #28b487);
+  background-image: linear-gradient(
+    to right bottom,
+    rgba(125, 213, 111, 0.9),
+    rgba(40, 180, 135, 0.9)
+  );
   opacity: 0.85;
 }
 
@@ -1112,10 +1116,14 @@ body {
     linear,
     left top,
     right bottom,
-    from(#7dd56f),
-    to(#28b487)
+    from(rgba(125, 213, 111, 0.9)),
+    to(rgba(40, 180, 135, 0.9))
   );
-  background-image: linear-gradient(to right bottom, #7dd56f, #28b487);
+  background-image: linear-gradient(
+    to right bottom,
+    rgba(125, 213, 111, 0.9),
+    rgba(40, 180, 135, 0.9)
+  );
   opacity: 0.7;
 }
 .card__picture-img {
@@ -1217,7 +1225,7 @@ body {
 .error__msg {
   font-size: 2.5rem;
   font-weight: 700;
-  max-width: 50rem;
+  max-width: 100%;
   margin: 0 auto;
   text-align: center;
 }
