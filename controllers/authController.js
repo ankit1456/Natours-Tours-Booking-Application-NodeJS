@@ -6,11 +6,14 @@ const User = require('./../models/userModel');
 const catchAsync = require('./../utils/catchAsync');
 const Email = require('./../utils/email');
 
+//! (((((((((((  GENERATE(SIGN) TOKEN  )))))))))))
 const signToken = id => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN
   });
 };
+
+//! ((((((((((  CREATE AND SEND TOKEN  ))))))))))
 
 const createSendToken = (user, statusCode, res) => {
   const token = signToken(user._id);
@@ -38,6 +41,9 @@ const createSendToken = (user, statusCode, res) => {
     }
   });
 };
+
+//! (((((((((((((  (USER SIGN UP  ))))))))))))))
+
 exports.signup = catchAsync(async (req, res, next) => {
   const newUser = await User.create({
     name: req.body.name,
@@ -50,6 +56,8 @@ exports.signup = catchAsync(async (req, res, next) => {
   await new Email(newUser, url).sendWelcome();
   createSendToken(newUser, 201, res);
 });
+
+//! (((((((((((((((((  USER SIGN IN  )))))))))))))))))
 
 exports.signin = catchAsync(async (req, res, next) => {
   const { email, password } = req.body;
@@ -68,9 +76,11 @@ exports.signin = catchAsync(async (req, res, next) => {
   // 3) If everything ok, send token to client
   createSendToken(user, 200, res);
 });
-//! PROTECTED ROUTES
+
+//! (((((((((((((((((  PROTECTED ROUTES  )))))))))))))))))
+
 exports.protect = catchAsync(async (req, res, next) => {
-  // 1) Getting token and check of it's there
+  // 1) Getting token and check  it's  existence
   let token;
   if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
     token = req.headers.authorization.split(' ')[1];
@@ -94,10 +104,10 @@ exports.protect = catchAsync(async (req, res, next) => {
     );
   }
 
-  // 4) Check if user changed password after the token was issued
+  // 4) Check if user changed the password after the token was issued
   if (currentUser.changedPasswordAfter(decoded.iat)) {
     return next(
-      new AppError('User recently changed the password. Please log in again.', 401)
+      new AppError('You recently changed your password. Please log in again.', 401)
     );
   }
   // GRANT ACCESS TO PROTECTED ROUTE
@@ -106,9 +116,10 @@ exports.protect = catchAsync(async (req, res, next) => {
   next();
 });
 
-//! RESTRICT PERMISSIONS
+//! ((((((((((((((    RESTRICT PERMISSIONS   ))))))))))))))
+
 exports.restrictTo = (...roles) => {
-  // roles is a array ['admin,'lead-guide]
+  // roles is an array ['admin,'lead-guide]
   return (req, res, next) => {
     if (!roles.includes(req.user.role)) {
       return next(
@@ -118,7 +129,8 @@ exports.restrictTo = (...roles) => {
     next();
   };
 };
-//! FORGOT PASSWORD
+
+//! (((((((((((((((  FORGOT PASSWORD  )))))))))))))))
 exports.forgotPassword = catchAsync(async (req, res, next) => {
   // 1) Get user based on posted email
   const user = await User.findOne({ email: req.body.email });
@@ -135,11 +147,7 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
     const resetURL = `${req.protocol}://${req.get(
       'host'
     )}/api/v1/users/resetPassword/${resetToken}`;
-    // await sendEmail({
-    //   email: user.email,
-    //   subject: 'Your password reset token (valid for 10 min)',
-    //   message
-    // });
+
     await new Email(user, resetURL).sendPasswordReset();
     res.status(200).json({
       status: 'success',
@@ -153,7 +161,7 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
     return next(new AppError('Something went wrong in sending the email'), 500);
   }
 });
-//! RESET PASSWORD
+//? ((((((((((((((((((   RESET PASSWORD   ))))))))))))))))))
 exports.resetPassword = catchAsync(async (req, res, next) => {
   // 1) Get user based on the token
   const hashedToken = await crypto
@@ -177,11 +185,11 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
   await user.save();
   // 3) Update changed password at property for the current user
 
-  // 4) Log the user in, send JWT
+  // 4) Log the user in and send JWT
   createSendToken(user, 200, res);
 });
 
-//! UPDATE PASSWORD FOR LOGGED IN USERS
+//? UPDATE PASSWORD FOR LOGGED IN USERS
 exports.updatePassword = catchAsync(async (req, res, next) => {
   // 1) Get user from collection
   const user = await User.findById(req.user.id).select('+password');
@@ -201,7 +209,7 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
   createSendToken(user, 200, res);
 });
 
-//! CHECK WHEATHER USER IS LOGGED IN OR NOT
+//? (((((((((((((   CHECK WHEATHER USER IS LOGGED IN OR NOT   )))))))))))))
 //only for rendered pages no errors
 exports.isLoggedIn = async (req, res, next) => {
   // 1) Getting token and check of it's there
@@ -234,7 +242,7 @@ exports.isLoggedIn = async (req, res, next) => {
   next();
 };
 
-//! LOGOUT
+//? (((((((((((((((((   LOGOUT   )))))))))))))))))
 
 exports.signout = (req, res) => {
   res.cookie('jwt', 'logged out', {

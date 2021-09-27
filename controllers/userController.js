@@ -43,6 +43,11 @@ exports.resizeUserPhoto = catchAsync(async (req, res, next) => {
   next();
 });
 
+exports.getAllUsers = factory.getAll(User);
+exports.getUser = factory.getOne(User);
+exports.updateUser = factory.updateOne(User);
+exports.deleteUser = factory.deleteOne(User);
+
 const filterObj = (reqBody, ...allowedFields) => {
   const newObj = {};
   Object.keys(reqBody).forEach(el => {
@@ -53,12 +58,7 @@ const filterObj = (reqBody, ...allowedFields) => {
   return newObj;
 };
 
-exports.getAllUsers = factory.getAll(User);
-exports.getUser = factory.getOne(User);
-exports.updateUser = factory.updateOne(User);
-exports.deleteUser = factory.deleteOne(User);
-
-//! Update logged in users
+//? (((((((((((((  Update logged in users  )))))))))))))
 exports.updateMe = catchAsync(async (req, res, next) => {
   // 1) Create error if user posts password data
   if (req.body.password || req.body.passwordConfrm) {
@@ -93,6 +93,7 @@ exports.getMe = (req, res, next) => {
 
   next();
 };
+
 //! Delete user account or set it inactive
 exports.deleteMe = catchAsync(async (req, res, next) => {
   await User.findByIdAndUpdate(req.user.id, { active: false });

@@ -2,6 +2,8 @@ const APIFeatures = require('../utils/APIFeatures');
 const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
 
+//! (((((((((((((((((((((   DELETE ONE DOCUMENT   )))))))))))))))))))))
+
 exports.deleteOne = Model =>
   catchAsync(async (req, res, next) => {
     const doc = await Model.findByIdAndDelete(req.params.id);
@@ -14,6 +16,8 @@ exports.deleteOne = Model =>
       data: null
     });
   });
+
+//! (((((((((((((((((((((   UPDATE ONE DOCUMENT   )))))))))))))))))))))
 
 exports.updateOne = Model =>
   catchAsync(async (req, res, next) => {
@@ -32,6 +36,8 @@ exports.updateOne = Model =>
     });
   });
 
+//! (((((((((((((((((((((   CREATE ONE DOCUMENT   )))))))))))))))))))))
+
 exports.createOne = Model =>
   catchAsync(async (req, res, next) => {
     const newTour = await Model.create(req.body);
@@ -42,6 +48,7 @@ exports.createOne = Model =>
       }
     });
   });
+//! (((((((((((((((((((((   GET ONDE DOCUMENTS  )))))))))))))))))))))
 
 exports.getOne = (Model, populateOptions) =>
   catchAsync(async (req, res, next) => {
@@ -52,7 +59,7 @@ exports.getOne = (Model, populateOptions) =>
     const doc = await query;
 
     if (!doc) {
-      return next(new AppError(`No document found with id :${req.params.id}`, 404));
+      return next(new AppError(`No document found with id : ${req.params.id}`, 404));
     }
     res.status(200).json({
       status: 'success',
@@ -62,6 +69,7 @@ exports.getOne = (Model, populateOptions) =>
     });
   });
 
+//! (((((((((((((((((((((   GET ALL DOCUMENTS   )))))))))))))))))))))
 exports.getAll = Model =>
   catchAsync(async (req, res, next) => {
     //!EXECUTE QUERY********************

@@ -1,15 +1,22 @@
 const AppError = require('./../utils/appError');
 
+//? (((((((((((((((((((   HANDLE INVALID DOCUMENTS IDs   )))))))))))))))))))
+
 const handleCastErrorDB = err => {
   const message = `Invalid ${err.path}: ${err.value}.`;
   return new AppError(message, 400);
 };
+
+//? (((((((((((((((((((   HANDLE DUPLICATE DB FIELD VALUES   )))))))))))))))))))
 
 const handleDuplicateFieldsDB = err => {
   const value = err.errmsg.match(/(["'])(\\?.)*?\1/)[0];
   const message = `Duplicate field value: ${value}. Please use another value`;
   return new AppError(message, 400);
 };
+
+//? (((((((((((((((((((   MONGOOSE VALIDATION ERRORS   )))))))))))))))))))
+
 const handleValidationErrorDB = err => {
   const errors = Object.values(err.errors).map(el => el.message);
   const message = `${errors.join('. ')}`;
@@ -17,12 +24,16 @@ const handleValidationErrorDB = err => {
   return new AppError(message, 400);
 };
 
+//? (((((((((((((((((((   HANDLE JWT ERRORS   )))))))))))))))))))
+
 const handleJWTError = () =>
-  new AppError('You are not logged in . Please log in to get access 🙂', 401);
+  new AppError('You are not logged in . Please log in to get access ', 401);
 
 const handleJWTExpiredError = () => {
   return new AppError('Your credentials have been expired .Please log in again', 401);
 };
+
+//? (((((((((((((((((((   SEND ERROR IN DEVELOPMENT   )))))))))))))))))))
 
 const sendErrorDev = (err, req, res) => {
   if (req.originalUrl.startsWith('/api')) {
@@ -40,6 +51,8 @@ const sendErrorDev = (err, req, res) => {
     msg: err.message
   });
 };
+
+//? (((((((((((((((((((   SEND ERROR IN PRODUCTION   )))))))))))))))))))
 
 const sendErrorProd = (err, req, res) => {
   // A) API
@@ -80,7 +93,8 @@ const sendErrorProd = (err, req, res) => {
   });
 };
 
-//! GLOBAL ERROR HANDLER
+//? (((((((((((((((((((   GLOBAL ERROR HANDLER   )))))))))))))))))))
+
 module.exports = (err, req, res, next) => {
   err.statusCode = err.statusCode || 500;
   err.status = err.status || 'error';
@@ -91,8 +105,10 @@ module.exports = (err, req, res, next) => {
     // let error = err ; // does't give name property
     // let error = Object.assign(err); //it will give a reference of err and  that's not we want
     // let error = JSON.parse(JSON.stringify(err)); //deep cloning of err
+    // let error = Object.create(err); //assigning all properties of err to error
 
-    let error = Object.create(err); //assigning all properties of err to error
+    let error = { ...err };
+    error.name = err.name;
 
     if (error.name === 'CastError') error = handleCastErrorDB(error);
     if (error.code === 11000) error = handleDuplicateFieldsDB(error);

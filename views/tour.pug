@@ -4,6 +4,7 @@ include _reviewCard
 block append head
   script(src='https://api.mapbox.com/mapbox-gl-js/v0.54.0/mapbox-gl.js')
   link(href='https://api.mapbox.com/mapbox-gl-js/v0.54.0/mapbox-gl.css' rel='stylesheet')
+  
          
 mixin overviewBox(label,text,icon)
   .overview-box__detail
@@ -29,7 +30,7 @@ block content
         .heading-box__detail
           svg.heading-box__icon
             use(xlink:href='/img/icons.svg#icon-map-pin')
-          span.heading-box__text #{tour.startLocation.description}
+          span.heading-box__text=tour.startLocation.description
 
   section.section-description
     .overview-box
@@ -90,5 +91,8 @@ block content
       img.cta__img.cta__img--2(src=`/img/tours/${tour.images[2]}`, alt='Tour Picture')
       .cta__content
         h2.heading-secondary What are you waiting for?
-        p.cta__text #{tour.duration} days. 1 adventure. Infinite memories. Make it yours today!
-        button.btn.btn--green.span-all-rows Book tour now!
+        p.cta__text #{tour.duration} days. 1 adventure. Infinite memories. Make it yours today
+        if user
+          button.btn.btn--green.span-all-rows#book-tour(data-tour-id=`${tour.id}`) Book tour now
+        else
+          a.btn.btn--green.span-all-rows(href="/signin") Login to book tour

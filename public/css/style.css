@@ -368,13 +368,13 @@ body {
     linear,
     left top,
     right bottom,
-    from(rgba(125, 213, 111, 0.9)),
-    to(rgba(40, 180, 135, 0.9))
+    from(rgba(125, 213, 111, 0.8)),
+    to(rgba(40, 180, 135, 0.8))
   );
   background-image: linear-gradient(
     to right bottom,
-    rgba(125, 213, 111, 0.9),
-    rgba(40, 180, 135, 0.9)
+    rgba(125, 213, 111, 0.8),
+    rgba(40, 180, 135, 0.8)
   );
   opacity: 0.85;
 }

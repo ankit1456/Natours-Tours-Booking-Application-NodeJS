@@ -37,7 +37,7 @@ const userSchema = new mongoose.Schema({
       validator: function(el) {
         return el === this.password;
       },
-      message: 'Confirm password is not matching with regular password'
+      message: 'Passwords are not the same'
     }
   },
   passwordChangedAt: Date,
@@ -50,7 +50,8 @@ const userSchema = new mongoose.Schema({
   }
 });
 
-// //! pre document middleware which saves hashed password
+//? ((((((((((   pre document middleware which saves hashed password  ))))))))))
+
 userSchema.pre('save', async function(next) {
   if (!this.isModified('password')) return next();
 
@@ -59,7 +60,8 @@ userSchema.pre('save', async function(next) {
   next();
 });
 
-//! pre document middleware which saves passwordChangedAt property
+//?((((((((  pre document middleware which saves passwordChangedAt property   ))))))))
+
 userSchema.pre('save', async function(next) {
   if (!this.isModified('password') || this.isNew) return next();
 
@@ -67,15 +69,13 @@ userSchema.pre('save', async function(next) {
   next();
 });
 
-//! pre query middleware which filters inactive users
-userSchema.pre(/^find/, function(next) {
-  this.find({ active: { $ne: false } });
-  next();
-});
-//!  comparing entered password with real password
+//?  ((((((((  comparing entered password with real password  ))))))))
+
 userSchema.methods.correctPassword = async function(enteredPassword, userPassword) {
   return await bcrypt.compare(enteredPassword, userPassword);
 };
+
+//?  ((((((((  Check for password updates )))))))))
 
 userSchema.methods.changedPasswordAfter = function(JWTTimestamp) {
   if (this.passwordChangedAt) {
@@ -83,11 +83,17 @@ userSchema.methods.changedPasswordAfter = function(JWTTimestamp) {
 
     return JWTTimestamp < changedTimestamp;
   }
-  // False means PASSWORD NOT changed
+  // False means PASSWORD didn't changed
   return false;
 };
 
-//! creating password reset token
+//? pre query middleware which filters inactive users
+userSchema.pre(/^find/, function(next) {
+  this.find({ active: { $ne: false } });
+  next();
+});
+
+//? creating password reset token
 userSchema.methods.createPasswordResetToken = function() {
   const resetToken = crypto.randomBytes(32).toString('hex');
 

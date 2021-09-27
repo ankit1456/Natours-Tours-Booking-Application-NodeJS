@@ -5,6 +5,7 @@ const catchAsync = require('../utils/catchAsync');
 const factory = require('../controllers/handleFactory');
 const AppError = require('../utils/appError');
 
+//! ((((((((((((((((((((   IMAGE UPLOAD   ))))))))))))))))))))
 const multerStorage = multer.memoryStorage();
 
 const multerFilter = (req, file, cb) => {
@@ -26,6 +27,8 @@ exports.uploadTourImages = upload.fields([
     maxCount: 3
   }
 ]);
+
+//! (((((((((((((((((((((((((((   RESIZE IMAGES    )))))))))))))))))))))))))))
 
 exports.resizeTourImages = catchAsync(async (req, res, next) => {
   if (!req.files.imageCover || !req.files.images) return next();
@@ -54,6 +57,8 @@ exports.resizeTourImages = catchAsync(async (req, res, next) => {
   );
   next();
 });
+
+//! ((((((((((((((((((((((   TOP 5 CHEAP TOURS   ))))))))))))))))))))))
 exports.aliasTopTours = (req, res, next) => {
   req.query.limit = '5';
   req.query.sort = '-ratingsAverage,price';
@@ -97,8 +102,11 @@ exports.getTourStats = catchAsync(async (req, res, next) => {
   });
 });
 
+// !(((((((((((((((((((((((    GET MONTHLY PLAN   )))))))))))))))))))))))
+
 exports.getMonthlyPlan = catchAsync(async (req, res, next) => {
   const year = req.params.year * 1;
+
   const plan = await Tour.aggregate([
     {
       $unwind: '$startDates'
@@ -134,6 +142,62 @@ exports.getMonthlyPlan = catchAsync(async (req, res, next) => {
     stats: 'success',
     data: {
       plan
+    }
+  });
+});
+
+// '/tours-within/:distance/center/-80.185942,25.774772/unit/:unit
+
+exports.getToursWithin = catchAsync(async (req, res, next) => {
+  const { distance, latlng, unit } = req.params;
+
+  const [lat, lng] = latlng.split(',');
+
+  const radius = unit === 'mi' ? distance / 3963.2 : distance / 6378.1;
+
+  if (!lat || !lng) {
+    return next(new AppError('Location not found', 400));
+  }
+
+  const tours = await Tour.find({
+    startLocation: { $geoWithin: { $centerSphere: [[lng, lat], radius] } }
+  });
+
+  console.log(distance, lat, lng, unit);
+  res.status(200).json({
+    status: 'success',
+    results: tours.length,
+    data: {
+      tours
+    }
+  });
+});
+
+exports.getDistances = catchAsync(async (req, res, next) => {
+  const { latlng, unit } = req.params;
+
+  const [lat, lng] = latlng.split(',');
+
+  if (!lat || !lng) {
+    return next(new AppError('Location not found', 400));
+  }
+
+  const distances = await Tour.aggregate([
+    {
+      $geoNear: {
+        near: {
+          type: 'Point',
+          coordinates: [lng * 1, lat * 1]
+        },
+        distanceField: 'distance'
+      }
+    }
+  ]);
+  res.status(200).json({
+    status: 'success',
+
+    data: {
+      distances
     }
   });
 });

@@ -1,7 +1,7 @@
 class APIFeatures {
   constructor(query, queryString) {
-    this.query = query; //mongoose query
-    this.queryString = queryString; // req.query
+    this.query = query; //!mongoose query
+    this.queryString = queryString; //! req.query
   }
 
   filter() {
@@ -11,7 +11,7 @@ class APIFeatures {
 
     excludedFields.forEach(el => delete queryObj[el]);
 
-    //? ADVANCED FILTERING
+    //* ADVANCED FILTERING
 
     let queryStr = JSON.stringify(queryObj);
     queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, match => `$${match}`);
