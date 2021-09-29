@@ -8,8 +8,8 @@ export const updateSettings = async (data, type) => {
   try {
     const url =
       type === 'password'
-        ? 'http://localhost:5000/api/v1/users//updateMyPassword'
-        : 'http://localhost:5000/api/v1/users/updateMe';
+        ? 'http://localhost:4000/api/v1/users//updateMyPassword'
+        : 'http://localhost:4000/api/v1/users/updateMe';
 
     const res = await axios({
       method: 'PATCH',
@@ -18,7 +18,10 @@ export const updateSettings = async (data, type) => {
     });
 
     if (res.data.status === 'success') {
-      showAlert('success', 'Account updated successfully 🙂');
+      showAlert('success', `${type.toUpperCase()} updated successfully 🙂`);
+      window.setTimeout(() => {
+        location.reload(true);
+      }, 1000);
     }
   } catch (err) {
     showAlert('error', err.response.data.message);

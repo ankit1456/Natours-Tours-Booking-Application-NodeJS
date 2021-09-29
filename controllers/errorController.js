@@ -77,7 +77,7 @@ const sendErrorProd = (err, req, res) => {
   // B) RENDERED WEBSITE
   // A) Operational, trusted error: send message to client
   if (err.isOperational) {
-    console.log(err);
+    console.log('ERROR 💥', err.message);
     return res.status(err.statusCode).render('error', {
       title: 'Something went wrong',
       msg: err.message
@@ -109,6 +109,7 @@ module.exports = (err, req, res, next) => {
 
     let error = { ...err };
     error.name = err.name;
+    error.message = err.message;
 
     if (error.name === 'CastError') error = handleCastErrorDB(error);
     if (error.code === 11000) error = handleDuplicateFieldsDB(error);

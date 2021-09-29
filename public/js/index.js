@@ -23,9 +23,10 @@ if (mapBox) {
 if (loginForm)
   loginForm.addEventListener('submit', e => {
     e.preventDefault();
-
+    document.querySelector('.loginBtnText').textContent = 'Processing...';
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
+
     login(email, password);
   });
 

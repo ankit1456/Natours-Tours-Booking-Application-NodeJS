@@ -8564,7 +8564,7 @@ var login = /*#__PURE__*/function () {
             _context.next = 3;
             return (0, _axios.default)({
               method: 'POST',
-              url: 'http://localhost:5000/api/v1/users/signin',
+              url: 'http://localhost:4000/api/v1/users/signin',
               data: {
                 email: email,
                 password: password
@@ -8615,12 +8615,17 @@ var signout = /*#__PURE__*/function () {
             _context2.next = 3;
             return (0, _axios.default)({
               method: 'GET',
-              url: 'http://localhost:5000/api/v1/users/signout'
+              url: 'http://localhost:4000/api/v1/users/signout'
             });
 
           case 3:
             res = _context2.sent;
-            if (res.data.status = 'success') location.reload();
+
+            if (res.data.status = 'success') {
+              location.reload(true);
+              if (location.pathname === '/me') location.assign('/');
+            }
+
             _context2.next = 11;
             break;
 
@@ -8671,7 +8676,7 @@ var updateSettings = /*#__PURE__*/function () {
         switch (_context.prev = _context.next) {
           case 0:
             _context.prev = 0;
-            url = type === 'password' ? 'http://localhost:5000/api/v1/users//updateMyPassword' : 'http://localhost:5000/api/v1/users/updateMe';
+            url = type === 'password' ? 'http://localhost:4000/api/v1/users//updateMyPassword' : 'http://localhost:4000/api/v1/users/updateMe';
             _context.next = 4;
             return (0, _axios.default)({
               method: 'PATCH',
@@ -8683,7 +8688,10 @@ var updateSettings = /*#__PURE__*/function () {
             res = _context.sent;
 
             if (res.data.status === 'success') {
-              (0, _alert.showAlert)('success', 'Account updated successfully 🙂');
+              (0, _alert.showAlert)('success', "".concat(type.toUpperCase(), " updated successfully \uD83D\uDE42"));
+              window.setTimeout(function () {
+                location.reload(true);
+              }, 1000);
             }
 
             _context.next = 11;
@@ -8955,7 +8963,7 @@ var bookTour = /*#__PURE__*/function () {
           case 3:
             stripe = _context.sent;
             _context.next = 6;
-            return (0, _axios.default)("http://localhost:5000/api/v1/bookings/checkout-session/".concat(tourId));
+            return (0, _axios.default)("http://localhost:4000/api/v1/bookings/checkout-session/".concat(tourId));
 
           case 6:
             session = _context.sent;
@@ -9287,6 +9295,7 @@ if (mapBox) {
 
 if (loginForm) loginForm.addEventListener('submit', function (e) {
   e.preventDefault();
+  document.querySelector('.loginBtnText').textContent = 'Processing...';
   var email = document.getElementById('email').value;
   var password = document.getElementById('password').value;
   (0, _login.login)(email, password);
@@ -9383,7 +9392,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "61614" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "63529" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
