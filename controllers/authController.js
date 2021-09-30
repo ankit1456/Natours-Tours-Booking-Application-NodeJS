@@ -213,7 +213,7 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
 //only for rendered pages no errors
 exports.isLoggedIn = async (req, res, next) => {
   // 1) Getting token and check of it's there
-  // console.log('req.cookies:', req.cookies);
+
   if (req.cookies.jwt) {
     // 2) Verify token
     try {

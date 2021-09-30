@@ -150,20 +150,23 @@ exports.getMonthlyPlan = catchAsync(async (req, res, next) => {
 
 exports.getToursWithin = catchAsync(async (req, res, next) => {
   const { distance, latlng, unit } = req.params;
-
   const [lat, lng] = latlng.split(',');
 
-  const radius = unit === 'mi' ? distance / 3963.2 : distance / 6378.1;
+  let radius;
+  if (unit === 'mi') radius = distance / 3963.2;
+  else if (unit === 'km') radius = distance / 6378.1;
+  else if (unit === 'mt') radius = distance / 6378100;
 
   if (!lat || !lng) {
-    return next(new AppError('Location not found', 400));
+    next(
+      new AppError('Please provide latitutr and longitude in the format lat,lng.', 400)
+    );
   }
 
   const tours = await Tour.find({
     startLocation: { $geoWithin: { $centerSphere: [[lng, lat], radius] } }
   });
 
-  console.log(distance, lat, lng, unit);
   res.status(200).json({
     status: 'success',
     results: tours.length,
@@ -175,11 +178,17 @@ exports.getToursWithin = catchAsync(async (req, res, next) => {
 
 exports.getDistances = catchAsync(async (req, res, next) => {
   const { latlng, unit } = req.params;
-
   const [lat, lng] = latlng.split(',');
 
+  let multiplier;
+  if (unit === 'mi') multiplier = 0.000621371;
+  else if (unit === 'km') multiplier = 0.001;
+  else multiplier = 1;
+
   if (!lat || !lng) {
-    return next(new AppError('Location not found', 400));
+    next(
+      new AppError('Please provide latitutr and longitude in the format lat,lng.', 400)
+    );
   }
 
   const distances = await Tour.aggregate([
@@ -189,13 +198,20 @@ exports.getDistances = catchAsync(async (req, res, next) => {
           type: 'Point',
           coordinates: [lng * 1, lat * 1]
         },
-        distanceField: 'distance'
+        distanceField: 'distance',
+        distanceMultiplier: multiplier
+      }
+    },
+    {
+      $project: {
+        distance: 1,
+        name: 1
       }
     }
   ]);
+
   res.status(200).json({
     status: 'success',
-
     data: {
       distances
     }
