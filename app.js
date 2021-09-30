@@ -8,6 +8,7 @@ const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
 const rateLimit = require('express-rate-limit');
 const cookieparser = require('cookie-parser');
+const compression = require('compression');
 
 const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
@@ -85,7 +86,7 @@ app.use(
     ]
   })
 );
-
+app.use(compression());
 app.use((req, res, next) => {
   req.requestTime = new Date().toLocaleString();
   console.log(req.requestTime);
