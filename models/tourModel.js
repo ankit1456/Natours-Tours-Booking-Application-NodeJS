@@ -115,8 +115,8 @@ const tourSchema = mongoose.Schema(
 );
 
 tourSchema.index({ price: 1, ratingsAverage: -1 });
-tourSchema.index({ startLocation: '2dsphere' });
 tourSchema.index({ slug: 1 });
+tourSchema.index({ startLocation: '2dsphere' });
 
 //! ((((((((((((((((((((((  VIRTUAL PROPERTY   )))))))))))))))))))))
 

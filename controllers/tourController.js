@@ -152,15 +152,10 @@ exports.getToursWithin = catchAsync(async (req, res, next) => {
   const { distance, latlng, unit } = req.params;
   const [lat, lng] = latlng.split(',');
 
-  let radius;
-  if (unit === 'mi') radius = distance / 3963.2;
-  else if (unit === 'km') radius = distance / 6378.1;
-  else if (unit === 'mt') radius = distance / 6378100;
+  const radius = unit === 'mi' ? distance / 3963.2 : distance / 6378.1;
 
   if (!lat || !lng) {
-    next(
-      new AppError('Please provide latitutr and longitude in the format lat,lng.', 400)
-    );
+    next(new AppError('Location not found', 400));
   }
 
   const tours = await Tour.find({
@@ -180,15 +175,10 @@ exports.getDistances = catchAsync(async (req, res, next) => {
   const { latlng, unit } = req.params;
   const [lat, lng] = latlng.split(',');
 
-  let multiplier;
-  if (unit === 'mi') multiplier = 0.000621371;
-  else if (unit === 'km') multiplier = 0.001;
-  else multiplier = 1;
+  const multiplier = unit === 'mi' ? 0.000621371 : 0.001;
 
   if (!lat || !lng) {
-    next(
-      new AppError('Please provide latitutr and longitude in the format lat,lng.', 400)
-    );
+    next(new AppError('Location not found', 400));
   }
 
   const distances = await Tour.aggregate([
