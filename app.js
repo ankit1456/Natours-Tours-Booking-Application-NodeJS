@@ -64,15 +64,14 @@ const limiter = rateLimit({
 
 app.use('/api', limiter);
 
-app
-  .post(
-    'webhook-checkout',
-    express.raw({ type: 'application/json' }),
-    bookingController.webhookCheckout
-  )
-  //! ((((((((((((((((((((  BODY PARSER  ))))))))))))))))))))
+app.post(
+  'webhook-checkout',
+  express.raw({ type: 'application/json' }),
+  bookingController.webhookCheckout
+);
+//! ((((((((((((((((((((  BODY PARSER  ))))))))))))))))))))
 
-  .app.use(express.json({ limit: '10kb' }));
+app.use(express.json({ limit: '10kb' }));
 app.use(express.urlencoded({ extended: true, limit: '10kb' }));
 app.use(cookieparser());
 
