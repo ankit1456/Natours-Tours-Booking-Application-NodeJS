@@ -15,10 +15,16 @@ const userRouter = require('./routes/userRoutes');
 const viewRouter = require('./routes/viewRoutes');
 const reviewRouter = require('./routes/reviewRoutes');
 const bookingRouter = require('./routes/bookingRoutes');
+const bookingController = require('./controllers/bookingController');
 const GlobalErrorHandler = require('./controllers/errorController');
 const AppError = require('./utils/appError');
 
 const app = express();
+
+app.enable('trust proxy');
+
+// Serving static files
+app.use(express.static(path.join(__dirname, 'public')));
 
 app.set('view engine', 'pug');
 app.set('views', path.join(__dirname, 'views'));
@@ -30,10 +36,7 @@ app.use(cors());
 
 app.options('*', cors());
 
-// Serving static files
-app.use(express.static(path.join(__dirname, 'public')));
-
-// Set security http headers
+// Set security http headersb
 app.use(
   helmet.contentSecurityPolicy({
     directives: {
@@ -61,9 +64,15 @@ const limiter = rateLimit({
 
 app.use('/api', limiter);
 
-//! ((((((((((((((((((((  BODY PARSER  ))))))))))))))))))))
+app
+  .post(
+    'webhook-checkout',
+    express.raw({ type: 'application/json' }),
+    bookingController.webhookCheckout
+  )
+  //! ((((((((((((((((((((  BODY PARSER  ))))))))))))))))))))
 
-app.use(express.json({ limit: '10kb' }));
+  .app.use(express.json({ limit: '10kb' }));
 app.use(express.urlencoded({ extended: true, limit: '10kb' }));
 app.use(cookieparser());
 
